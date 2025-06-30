@@ -16,15 +16,16 @@ Code Structure:
 + main.go — CLI parsing and command dispatch
 + models/ — Core data structures and in-memory storage logic
 + handlers.go — Command handlers implementing store/get/delete logic
++ errs/ - Store Errors
 
 ## TODO
 - [ ] Add help command
-- [ ] Implement `hset` command handler
+- [x] Implement `hset` command handler
 - [ ] Write more tests for edge cases
 - [ ] Improve CLI argument parsing
 - [ ] Add documentation and examples
-- [ ] Add into `lists or maps` instead of rewriting
-
+- [x] Add into `lists or maps` instead of rewriting
+- [ ] implement a Get Handler
 
 ### Goals
 * Understand Redis data structures and command handling
