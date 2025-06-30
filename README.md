@@ -13,9 +13,9 @@ Features
 ## Project Status
 ⚠️ This project is a work-in-progress and experimental.
 Code Structure:
-+ main.go — CLI parsing and command dispatch
++ main.go — command dispatch
 + models/ — Core data structures and in-memory storage logic
-+ handlers.go — Command handlers implementing store/get/delete logic
++ handlers/ — Command handlers implementing store/get/delete logic
 + errs/ - Store Errors
 
 ## TODO
@@ -25,7 +25,7 @@ Code Structure:
 - [ ] Improve CLI argument parsing
 - [ ] Add documentation and examples
 - [x] Add into `lists or maps` instead of rewriting
-- [ ] implement a Get Handler
+- [x] implement a Get Handler
 
 ### Goals
 * Understand Redis data structures and command handling
