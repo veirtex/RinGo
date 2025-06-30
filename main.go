@@ -22,6 +22,8 @@ func main() {
 	var command string
 	if len(args) > 1 {
 		command = args[1]
+	} else {
+		return
 	}
 
 	var r models.RinGoObject
