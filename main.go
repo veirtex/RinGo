@@ -2,15 +2,21 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"os"
+	"ringo/errs"
 	"ringo/models"
 )
 
 func main() {
 	args := os.Args
+	if len(args) < 4 {
+		log.Panic(errs.ErrArgs)
+	}
 	handlers := map[string]Handler{
-		"store":  StoreHandler{},
-		"get":    GetHandler{},
+		"set":    SetHandler{},
+		"sset":   SSetHandler{},
+		"hset":   HSetHandler{},
 		"delete": DeleteHandler{},
 	}
 	var command string
