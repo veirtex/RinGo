@@ -1,18 +1,12 @@
 package models
 
 import (
-	"errors"
 	"fmt"
 	"ringo/errs"
 	"time"
 )
 
-var ()
-
 func (r *RinGoObject) Store(key string, value interface{}, duration time.Duration) error {
-	if key == "" {
-		return fmt.Errorf("key: %s, %w", key, errs.ErrNilKey)
-	}
 	var exp time.Time
 	if duration != 0 {
 		exp = time.Now().Add(duration)
@@ -35,12 +29,9 @@ func (r *RinGoObject) Store(key string, value interface{}, duration time.Duratio
 }
 
 func (r *RinGoObject) Get(key string) (interface{}, error) {
-	if key == "" {
-		return nil, fmt.Errorf("key: %s, %w", key, errs.ErrNilKey)
-	}
 	val, ok := r.Values[key]
 	if !ok {
-		return nil, fmt.Errorf("key: %s, %w", key, errs.ErrNotFound)
+		return nil, fmt.Errorf("%s, %w", key, errs.ErrNotFound)
 	}
 
 	if !val.ExpirationTime.IsZero() && time.Now().After(val.ExpirationTime) {
@@ -56,22 +47,20 @@ func (r *RinGoObject) Get(key string) (interface{}, error) {
 	case map[string]string:
 		return v, nil
 	default:
-		return nil, errors.New("failed to define the datatype of the value")
+		return nil, errs.ErrDatatype
 	}
 }
 
 func (r *RinGoObject) Delete(key string) error {
-	if key == "" {
-		return fmt.Errorf("key: %s, %w", key, errs.ErrNilKey)
+	if _, err := r.Get(key); err != nil {
+		return err
+	} else {
+		delete(r.Values, key)
+		return nil
 	}
-	delete(r.Values, key)
-	return nil
 }
 
 func (r *RinGoObject) getExpirationDate(key string) (time.Time, error) {
-	if key == "" {
-		return time.Time{}, fmt.Errorf("key: %s, %w", key, errs.ErrNilKey)
-	}
 	val, ok := r.Values[key]
 	if !ok {
 		return time.Time{}, fmt.Errorf("key: %s, %w", key, errs.ErrNotFound)
