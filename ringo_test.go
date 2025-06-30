@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"ringo/errs"
+	"ringo/handlers"
 	"ringo/models"
 	"testing"
 	"time"
@@ -12,7 +13,7 @@ import (
 // TESTS ARE WRITTEN BY GPT I NEED TO REWRITE EVERYTHING BY MYSELF
 func TestStoreHandler_Set(t *testing.T) {
 	r := &models.RinGoObject{Values: make(map[string]models.GlobalObject)}
-	h := SetHandler{}
+	h := handlers.SetHandler{}
 
 	args := []string{"cmd", "set", "mykey", "myvalue"}
 	err := h.Handle(args, r)
@@ -31,7 +32,7 @@ func TestStoreHandler_Set(t *testing.T) {
 
 func TestStoreHandler_SSet(t *testing.T) {
 	r := &models.RinGoObject{Values: make(map[string]models.GlobalObject)}
-	h := SSetHandler{}
+	h := handlers.SSetHandler{}
 
 	args := []string{"cmd", "sset", "listkey", "val1", "val2", "val3"}
 	err := h.Handle(args, r)
@@ -79,7 +80,7 @@ func TestStoreHandler_SSet(t *testing.T) {
 
 func TestStoreHandler_HSet(t *testing.T) {
 	r := &models.RinGoObject{Values: make(map[string]models.GlobalObject)}
-	h := HSetHandler{}
+	h := handlers.HSetHandler{}
 	args := []string{"cmd", "hset", "listkey", "key1", "val1", "key2", "val2", "key3", "val3"}
 	err := h.Handle(args, r)
 	if err != nil {
@@ -129,7 +130,7 @@ func TestStoreHandler_HSet(t *testing.T) {
 
 func TestExpirationTime(t *testing.T) {
 	r := &models.RinGoObject{Values: make(map[string]models.GlobalObject)}
-	sH := SetHandler{}
+	sH := handlers.SetHandler{}
 	args := []string{"cmd", "set", "key", "val", "exp", "1"}
 	err := sH.Handle(args, r)
 	if err != nil {
@@ -143,7 +144,7 @@ func TestExpirationTime(t *testing.T) {
 		t.Errorf("expected error %v, got %v", errs.ErrKeyDeleted, err)
 	}
 
-	sSH := SSetHandler{}
+	sSH := handlers.SSetHandler{}
 
 	args = []string{"cmd", "sset", "key", "val", "val", "exp", "1"}
 	err = sSH.Handle(args, r)
@@ -158,7 +159,7 @@ func TestExpirationTime(t *testing.T) {
 		t.Errorf("expected error %v, got %v", errs.ErrKeyDeleted, err)
 	}
 
-	hSH := HSetHandler{}
+	hSH := handlers.HSetHandler{}
 
 	args = []string{"cmd", "hset", "key", "key1", "val1", "exp", "1"}
 	err = hSH.Handle(args, r)
@@ -176,8 +177,8 @@ func TestExpirationTime(t *testing.T) {
 
 func TestDeleting(t *testing.T) {
 	r := &models.RinGoObject{Values: make(map[string]models.GlobalObject)}
-	sH := SetHandler{}
-	dH := DeleteHandler{}
+	sH := handlers.SetHandler{}
+	dH := handlers.DeleteHandler{}
 	args := []string{"cmd", "set", "key", "val"}
 	err := sH.Handle(args, r)
 	if err != nil {
