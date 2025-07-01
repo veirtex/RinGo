@@ -2,6 +2,7 @@ package models
 
 import (
 	"fmt"
+	"maps"
 	"ringo/errs"
 	"time"
 )
@@ -91,22 +92,19 @@ func mergeFunc(val interface{}, newVal interface{}) (interface{}, error) {
 	case []string:
 		v2, ok := newVal.([]string)
 		if !ok {
-			return nil, errs.ErrDatatype
+			break
 		}
 		v = append(v, v2...)
 		return v, nil
 	case map[string]string:
 		v2, ok := newVal.(map[string]string)
 		if !ok {
-			return nil, errs.ErrDatatype
+			break
 		}
-		for k, value := range v2 {
-			v[k] = value
-		}
+		maps.Copy(v, v2)
 		return v, nil
-	default:
-		return nil, errs.ErrDatatype
 	}
+	return newVal, nil
 }
 
 func NewRinGoObject() *RinGoObject {
