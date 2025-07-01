@@ -11,12 +11,13 @@ import (
 
 // NOTE TO SELF
 // TESTS ARE WRITTEN BY GPT I NEED TO REWRITE EVERYTHING BY MYSELF
+// AYT NVM I FIXED THE MISSING THINGS NOW I NEED TO WRITE MORE TEST I THINK TO COVER MORE THINGS
 func TestStoreHandler_Set(t *testing.T) {
 	r := &models.RinGoObject{Values: make(map[string]models.GlobalObject)}
 	h := handlers.SetHandler{}
 
-	args := []string{"cmd", "set", "mykey", "myvalue"}
-	err := h.Handle(args, r)
+	args := []string{"set", "mykey", "myvalue"}
+	_, err := h.Handle(args, r)
 	if err != nil {
 		t.Fatalf("expected no error, got %v", err)
 	}
@@ -34,8 +35,8 @@ func TestStoreHandler_SSet(t *testing.T) {
 	r := &models.RinGoObject{Values: make(map[string]models.GlobalObject)}
 	h := handlers.SSetHandler{}
 
-	args := []string{"cmd", "sset", "listkey", "val1", "val2", "val3"}
-	err := h.Handle(args, r)
+	args := []string{"sset", "listkey", "val1", "val2", "val3"}
+	_, err := h.Handle(args, r)
 	if err != nil {
 		t.Fatalf("expected no error, got %v", err)
 	}
@@ -56,8 +57,8 @@ func TestStoreHandler_SSet(t *testing.T) {
 		}
 	}
 
-	args = []string{"cmd", "sset", "listkey", "val4", "Val5", "val6"}
-	err = h.Handle(args, r)
+	args = []string{"sset", "listkey", "val4", "Val5", "val6"}
+	_, err = h.Handle(args, r)
 	if err != nil {
 		t.Fatalf("expected no error with expiration, got %v", err)
 	}
@@ -81,8 +82,8 @@ func TestStoreHandler_SSet(t *testing.T) {
 func TestStoreHandler_HSet(t *testing.T) {
 	r := &models.RinGoObject{Values: make(map[string]models.GlobalObject)}
 	h := handlers.HSetHandler{}
-	args := []string{"cmd", "hset", "listkey", "key1", "val1", "key2", "val2", "key3", "val3"}
-	err := h.Handle(args, r)
+	args := []string{"hset", "listkey", "key1", "val1", "key2", "val2", "key3", "val3"}
+	_, err := h.Handle(args, r)
 	if err != nil {
 		t.Fatalf("expected no error, got %v", err)
 	}
@@ -104,8 +105,8 @@ func TestStoreHandler_HSet(t *testing.T) {
 		}
 	}
 
-	args = []string{"cmd", "hset", "listkey", "key4", "val4", "key5", "val5"}
-	err = h.Handle(args, r)
+	args = []string{"hset", "listkey", "key4", "val4", "key5", "val5"}
+	_, err = h.Handle(args, r)
 	if err != nil {
 		t.Fatalf("expected no error, got %v", err)
 	}
@@ -131,8 +132,8 @@ func TestStoreHandler_HSet(t *testing.T) {
 func TestExpirationTime(t *testing.T) {
 	r := &models.RinGoObject{Values: make(map[string]models.GlobalObject)}
 	sH := handlers.SetHandler{}
-	args := []string{"cmd", "set", "key", "val", "exp", "1"}
-	err := sH.Handle(args, r)
+	args := []string{"set", "key", "val", "exp", "1"}
+	_, err := sH.Handle(args, r)
 	if err != nil {
 		t.Fatalf("expected no error, got %v", err)
 	}
@@ -146,8 +147,8 @@ func TestExpirationTime(t *testing.T) {
 
 	sSH := handlers.SSetHandler{}
 
-	args = []string{"cmd", "sset", "key", "val", "val", "exp", "1"}
-	err = sSH.Handle(args, r)
+	args = []string{"sset", "key", "val", "val", "exp", "1"}
+	_, err = sSH.Handle(args, r)
 	if err != nil {
 		t.Fatalf("expected no error, got %v", err)
 	}
@@ -161,8 +162,8 @@ func TestExpirationTime(t *testing.T) {
 
 	hSH := handlers.HSetHandler{}
 
-	args = []string{"cmd", "hset", "key", "key1", "val1", "exp", "1"}
-	err = hSH.Handle(args, r)
+	args = []string{"hset", "key", "key1", "val1", "exp", "1"}
+	_, err = hSH.Handle(args, r)
 	if err != nil {
 		t.Fatalf("expected no error, got %v", err)
 	}
@@ -179,14 +180,14 @@ func TestDeleting(t *testing.T) {
 	r := &models.RinGoObject{Values: make(map[string]models.GlobalObject)}
 	sH := handlers.SetHandler{}
 	dH := handlers.DeleteHandler{}
-	args := []string{"cmd", "set", "key", "val"}
-	err := sH.Handle(args, r)
+	args := []string{"set", "key", "val"}
+	_, err := sH.Handle(args, r)
 	if err != nil {
 		t.Fatalf("expected no error, got %v", err)
 	}
 
-	args = []string{"cmd", "delete", "key"}
-	err = dH.Handle(args, r)
+	args = []string{"delete", "key"}
+	_, err = dH.Handle(args, r)
 	if err != nil {
 		t.Fatalf("expected no error, got %v", err)
 	}
