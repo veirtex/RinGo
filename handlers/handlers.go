@@ -10,7 +10,7 @@ import (
 )
 
 type Handler interface {
-	Handle(args []string, r *models.RinGoObject) error
+	Handle(args []string, r *models.RinGoObject) (interface{}, error)
 }
 
 type SetHandler struct{}
@@ -18,6 +18,8 @@ type SetHandler struct{}
 type SSetHandler struct{}
 
 type HSetHandler struct{}
+
+type GetHandler struct{}
 
 type DeleteHandler struct{}
 
@@ -30,38 +32,41 @@ func processTime(sndStr string) (time.Duration, error) {
 	}
 }
 
-func (h SetHandler) Handle(args []string, r *models.RinGoObject) error {
-	if len(args) < 4 {
-		return errs.ErrArgs
+func (h SetHandler) Handle(args []string, r *models.RinGoObject) (interface{}, error) {
+	if len(args) < 3 {
+		return false, errs.ErrArgs
 	}
-	key := args[2]
-	value := args[3]
+	key := args[1]
+	value := args[2]
 	var exp time.Duration
-	if len(args) > 5 {
-		if strings.ToLower(args[4]) == "exp" {
-			if dur, err := processTime(args[5]); err != nil {
-				return err
+	if len(args) > 4 {
+		if strings.ToLower(args[3]) == "exp" {
+			if dur, err := processTime(args[4]); err != nil {
+				return false, err
 			} else {
 				exp = dur
 			}
 		}
 	}
 	if err := r.Store(key, value, exp); err != nil {
-		return err
+		return false, err
 	}
-	return nil
+	return true, nil
 }
 
-func (h SSetHandler) Handle(args []string, r *models.RinGoObject) error {
-	key := args[2]
+func (h SSetHandler) Handle(args []string, r *models.RinGoObject) (interface{}, error) {
+	if len(args) < 3 {
+		return false, errs.ErrArgs
+	}
+	key := args[1]
 	values := []string{}
 	var exp time.Duration
-	for i := 3; i < len(args); i++ {
+	for i := 2; i < len(args); i++ {
 		if strings.ToLower(args[i]) == "exp" {
 			if i+1 < len(args) {
 				dur, err := processTime(args[i+1])
 				if err != nil {
-					return err
+					return false, err
 				}
 				exp = dur
 			}
@@ -70,46 +75,49 @@ func (h SSetHandler) Handle(args []string, r *models.RinGoObject) error {
 		values = append(values, args[i])
 	}
 	if err := r.Store(key, values, exp); err != nil {
-		return err
+		return false, err
 	} else {
-		return nil
+		return true, nil
 	}
 }
 
-func (h HSetHandler) Handle(args []string, r *models.RinGoObject) error {
-	key := args[2]
+func (h HSetHandler) Handle(args []string, r *models.RinGoObject) (interface{}, error) {
+	if len(args) < 4 {
+		return false, errs.ErrArgs
+	}
+	key := args[1]
 	values := make(map[string]string)
 	var exp time.Duration
-	for i := 3; i < len(args); i += 2 {
+	for i := 2; i < len(args); i += 2 {
 		if strings.ToLower(args[i]) == "exp" {
 			if i+1 < len(args) {
 				dur, err := processTime(args[i+1])
 				if err != nil {
-					return err
+					return false, err
 				}
 				exp = dur
 			}
 			break
 		}
 		if i+1 >= len(args) {
-			return fmt.Errorf("expected value after key '%s'", args[i])
+			return false, fmt.Errorf("expected value after key '%s'", args[i])
 		}
 		hsetKey := args[i]
 		hsetVal := args[i+1]
 		values[hsetKey] = hsetVal
 	}
 	if err := r.Store(key, values, exp); err != nil {
-		return err
+		return false, err
 	} else {
-		return nil
+		return true, nil
 	}
 }
 
-func GetHandle(args []string, r *models.RinGoObject) (interface{}, error) {
-	if len(args) < 3 {
+func (h GetHandler) Handle(args []string, r *models.RinGoObject) (interface{}, error) {
+	if len(args) < 2 {
 		return nil, errs.ErrArgs
 	}
-	key := args[2]
+	key := args[1]
 	if key == "" {
 		return nil, errs.ErrNilKey
 	}
@@ -120,16 +128,16 @@ func GetHandle(args []string, r *models.RinGoObject) (interface{}, error) {
 	}
 }
 
-func (h DeleteHandler) Handle(args []string, r *models.RinGoObject) error {
-	if len(args) < 3 {
-		return errs.ErrArgs
+func (h DeleteHandler) Handle(args []string, r *models.RinGoObject) (interface{}, error) {
+	if len(args) < 2 {
+		return false, errs.ErrArgs
 	}
-	key := args[2]
+	key := args[1]
 	if key == "" {
-		return errs.ErrNilKey
+		return false, errs.ErrNilKey
 	}
 	if err := r.Delete(key); err != nil {
-		return err
+		return false, err
 	}
-	return nil
+	return true, nil
 }
